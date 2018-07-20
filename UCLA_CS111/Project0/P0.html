@@ -1,0 +1,329 @@
+<HTML>
+<HEAD>
+<TITLE>Project 0</TITLE>
+</HEAD>
+<BODY>
+<CENTER>
+<H1>Project 0<br>
+Warm-Up</H1>
+</CENTER>
+
+<H2>INTRODUCTION:</H2>
+<P>
+It is not uncommon for students come into this course without basic C software development 
+skills (which should have been developed in the CS111 prerequisites),  and invest a great deal of time and frustrating effort in the first two projects 
+before concluding they will not pass the course and must drop.  We have created this
+simple warm-up to determine whether or not students are prepared to work on C programming 
+projects.
+Most students should find this project to be relatively easy (a few hours of work,
+mostly understanding the APIs).
+If you do not find this project to be relatively straight-forward, you may want to reconsider
+whether or not you are ready to take this course.
+</P>
+
+<H2>RELATION TO READING AND LECTURES:</H2>
+<P>
+None.  
+This project requires only C programming skills and basic familiarity with command line interfaces and makefiles that incoming students should already possess.  Mastery of the material covered in a class like 35L should be enough to make this project straightforward.
+</P>
+
+<H2>PROJECT OBJECTIVES:</H2>
+<UL>
+    <LI> ensure students have a working Linux development environment.</LI>
+    <LI> ensure students can code, compile, test and debug simple C programs.</LI>
+    <LI> introduce and demonstrate the ability to use basic POSIX file operations.</LI>
+    <LI> introduce and demonstrate the ability to process command line arguments.</LI>
+    <LI> introduce and demonstrate the ability to catch and handle run-time exceptions.</LI>
+    <LI> introduce and demonstrate the ability to return informative exit status.</LI>
+    <LI> demonstrate the ability to research and exploit non-trivial APIs.</LI>
+    <LI> demonstrate the ability to construct a standard <tt>Makefile</tt>.</LI>
+    <LI> demonstrate the ability to write software that conforms to a Command
+         Line Interface (CLI) specification.</LI>
+</UL>
+
+<H2>DELIVERABLES:</H2>
+A single compressed tarball (<tt>.tar.gz</tt>) containing:
+<UL>
+    <LI> a single C source module that compiles cleanly (with <em>gcc</em>, with no errors or warnings).</LI>
+    <LI> a <tt>Makefile</tt> to build the program and the tarball.</LI>
+    <LI> two screen snapshot(s) from a <em>gdb(1)</em> session: 
+	 <ul>
+	 	<li> <tt>backtrace.png</tt> ...  showing a segfault and associated stack-trace</li>
+		<li> <tt>breakpoint.png</tt> ...  showing a breakpoint and variable inspection</li>
+    	</ul>
+    </LI>
+    <LI> a <tt>README</tt> file with identification information,
+         a description of the included files,
+    	 the <A HREF="https://en.wikipedia.org/wiki/Smoke_testing_(software)">smoke-test cases</A> in the <tt>check</tt> target,
+         and any other information about your submission that you would like
+	 to bring to our attention 
+	 (e.g., research, limitations, features, testing methodology).</LI>
+</UL>
+
+<H2>PROJECT DESCRIPTION:</H2>
+<OL type="1">
+    <LI> (if you do not already have one)
+    	bring up or obtain access to a Linux development environment.  
+	Your development environment should include (at least):
+	<UL>
+		<LI>gcc</LI>
+		<LI>libc (e.g., glibc or libc6-dev)</LI>
+		<LI>make</LI>
+		<LI>gdb</LI>
+	</UL>
+    </LI>
+    <P></P>
+    <LI> (if you are not already familiar with them) study the following manual sections:
+	<UL>
+	    <LI>POSIX file operations ...
+    		<em>open(2), creat(2), close(2), dup(2), read(2), write(2), exit(2), signal(2)</em>,
+		and this brief tutorial on 
+		<a href="fd_juggling.html">file descriptor manipulation</a>.
+	    </LI>
+	    <LI><em>strerror(3)</em> ... function that interprets the error codes
+	        returned from failed system calls.</LI>
+    	    <LI><em>getopt(3)</em> ... the framework we will use for argument
+		handling in all projects for this course.</LI>
+	    <LI><em>tar(1)</em> (and the <strong>-z</strong> option) ... program for
+	        archiving files in a tarball.</LI>
+	    <LI><em>gdb(1)</em> (and the <tt>run</tt>, <tt>bt</tt>,
+	        <tt>list</tt>, <tt>print</tt> and <tt>break</tt> 
+		commands in particular) ... a Linux debugger for C/C++ programs.</li>
+	</UL>
+	<P>
+	You will probably find understanding <em>getopt(3)</em> to be the most
+	difficult part of this project.
+    	Feel free to seek out other examples/tutorials for these functions, but make
+	 sure you cite those sources in your <tt>README</tt>.
+    	</P>
+    </LI>
+    <P></P>
+    <LI> write a program that copies its standard input to its standard output
+    	 by <em>read(2)</em>-ing from file descriptor 0 (until encountering an
+	 end of file) and <em>write(2)</em>-ing to file descriptor 1.
+	 If no errors (other than EOF) are encountered, your program should
+	 <em>exit(2)</em> with a return code of 0.
+	 <P>
+	 Your program executable should be called <tt>lab0</tt>,
+	 and accept the following <u>(optional)</u> command line arguments (in any combination or order):
+	 </P>
+    	 <UL>
+	     <LI> <strong>--input=</strong><em>filename</em> ...
+	     	  use the specified file as standard input (making it the new fd0).
+		  <br>
+		  If you are unable to open the specified input file,
+		  report the failure (on <tt>stderr</tt>, file descriptor 2) 
+		  using <em>fprintf(3)</em>,  and <em>exit(2)</em> with a return code of 2.
+		  </LI>
+	     <LI> <strong>--output=</strong><em>filename</em> ...
+	     	  create the specified file and use it as standard output (making it the new fd1).
+		  <br>
+		  If you are unable to create the specified output file,
+		  report the failure (on <tt>stderr</tt>, file descriptor 2) 
+		  using <em>fprintf(3)</em>, and <em>exit(2)</em> with a return code of 3.
+		  </LI>
+	     <LI> <strong>--segfault</strong> ... force a segmentation fault (e.g., by 
+	     	  calling a subroutine that sets a <tt>char *</tt> pointer to <tt>NULL</tt>
+		  and then stores through the null pointer).  If this argument is specified,
+		  do it immediately, and do not copy from stdin to stdout.
+		  </LI>
+	     <LI> <strong>--catch</strong> ... use <em>signal(2)</em> to
+	     	  register a <tt>SIGSEGV</tt> handler
+		  that catches the segmentation fault, logs an error message
+		  (on <tt>stderr</tt>, file descriptor 2) and <em>exit(2)</em> with a 
+		  return code of 4.
+		  </LI>
+	 </UL>
+	<P>
+	When you print out an error message (e.g., because an open failed), your message
+	should include enough information to enable a user to understand not merely the
+	nature of the problem but its cause ... for example:
+	<ul>
+	   <li> which argument caused the problem ... e.g., <strong><tt>--input</tt></strong></li>
+	   <li> which file could not be opened ... e.g., <tt>myfile.txt</tt></li>
+	   <li> the reason it could not be opened ... e.g., no such file</li>
+	</ul>
+	</p>
+	<P>
+	Do your argument parsing with <em>getopt_long(3)</em>.  This is, for
+	historical reasons, a somewhat convoluted API, but ...
+	<ul>
+	   <li>	it is very similar APIs are used in many other languages and systems.</li>
+	   <li> I want you to gain experience with the very common trial-and-error
+	   	process of learning how to use a non-trivial API.</li>
+	</ul>
+	</P>
+	<P>
+	If you encounter an unrecognized argument you should print out an error message
+	including a correct usage line, and <em>exit(2)</em> with a return code
+	of 1.</li>
+	</p>
+	<P>
+	To ensure that operations are performed in the right order when multiple
+	arguments are specified, it is suggested that you 
+	<ul>
+	   <LI> first process all arguments and store the results in variables</LI>
+	   <LI> then check which options were specified and carry actions out 
+	        in the correct order:
+		<ol type="1">
+		   <li>do any file redirection</li>
+		   <li>register the signal handler</li>
+		   <li>cause the segfault</li>
+		   <li>if no segfault was caused, copy stdin to stdout</li>
+		</ol>
+		</LI>
+	</ul>
+	</P>
+	<P>
+	It is relatively easy to generate primitive error messages with
+	<em>perror(3)</em>, but if you study the documentation you will
+	see how to get access to the underlying error descriptions, which
+	you could then use with <tt>fprintf(stderr,...</tt> to generate
+	better formatted error messages to the correct file descriptor.
+	</p>
+    	<P>
+	Note that to use the advanced debugging features of <em>gdb(1)</em> you will need
+	to compile your program with the <strong>-g</strong> option, which adds debugging
+	symbol table information to your program.
+	</p>
+    </LI>
+    <P></P>
+    <LI> create a <tt>Makefile</tt> that supports the following targets:
+	<UL>
+	    <LI>(default) ... build the <tt>lab0</tt> executable.
+		To maximize comile-time error checking, you should compile 
+		your program with the 
+		<strong><tt>-Wall</tt></strong> and
+		<strong><tt>-Wextra</tt></strong> options.
+	        </LI>
+	    <LI><tt>check</tt> ... runs a quick smoke-test on whether or
+	    	not the program seems to work, supports the required
+		arguments, and properly reports success or failure.
+		<br>
+		Please include a brief description (in your <tt>README</tt>)
+		of what checks you chose to include in your smoke-test.
+		</LI>
+	    <LI><tt>clean</tt> ... delete <u>all</u> files created by the
+	        Makefile, and return the directory to its freshly untared state.</LI>
+	    <LI><tt>dist</tt> ... build the distribution tarball.</LI>
+	</UL>
+    </LI>
+    <P></P>
+    <LI> run your program (with the <strong>--segfault</strong> argument) under
+    	  <em>gdb(1)</em>
+	  <UL>
+	  	<LI>take the fault</LI>
+		<LI>get a stack backtrace</LI>
+		<LI>take a screen snapshot (to be included with your submission)</LI>
+    	  </UL>
+	  <P>
+    	  Putting the code that causes the SEGFAULT in a separate subroutine
+	  will make the stack trace a little more interesting.
+    	  </p>
+    </LI>
+    <LI> run your program (with the <strong>--segfault</strong> argument) under
+    	  <em>gdb(1)</em>
+	  <UL>
+	  	<LI>set a break-point at the bad assignment</LI>
+		<LI>run the program up to the breakpoint</LI>
+		<LI>inspect the pointer to confirm that it is indeed NULL</LI>
+		<LI>take a screen snapshot (to be included with your submission)</LI>
+    	  </UL>
+	  <P>
+    	  You will not be able to list lines of code, print data, or set breakpoints
+	  in <em>gdb</em> unless your program has been compiled with the <strong>-g</strong>
+	  (debug symbols) switch.
+    	  </p>
+    </LI>
+</OL>
+<P>
+<H3>Summary of exit codes</h3>
+<UL>
+	<tt>0</tt> ... copy successful<br>
+	<tt>1</tt> ... unrecognized argument<br>
+	<tt>2</tt> ... unable to open input file<br>
+	<tt>3</tt> ... unable to open output file<br>
+	<tt>4</tt> ... caught and received <tt>SIGSEGV</tt><br>
+</UL>
+</P>
+
+<H2>SUBMISSION:</H2>
+<P>
+Your <strong>README</strong> file (for this and every lab) must include lines of the form:
+<ul>
+	<strong>NAME:</strong> <em>your name</em><br>
+	<strong>EMAIL:</strong> <em>your email</em><br>
+	<strong>ID:</strong> <em>your student ID</em>
+</ul>
+And, if slip days are allowed on this project, and you want to use some,
+this too must be included in the <strong>README</strong> file:
+<ul>
+	<strong>SLIPDAYS:</strong> <em>#days</em>
+</ul>
+If, for instance, you wanted to use two slip-days, you would add the following
+line:
+<ul>
+	<strong>SLIPDAYS: 2</strong>
+</ul>
+Your name, student ID, and email address  should also appear as comments at the top
+of your <tt>Makefile</tt> and each source file.
+</P>
+<P>
+Your tarball should have a name of the form
+<tt>lab0-</tt><em>yourStudentID</em><tt>.tar.gz</tt>.
+You can sanity check your submission with this 
+<A href="P0_check.sh">test script</A>.
+There will be no manual regrading on this project.
+Submissions that do not pass the sanity check are likely to receive very low scores.
+</P>
+<P>
+We will test it on a departmental Linux server.
+You would be well advised to test all the functionality of your submission on 
+that platform before submitting it.
+</P>
+
+<H2>GRADING:</H2>
+<P>
+Points for this project will be awarded:
+</P>
+<CENTER>
+<TABLE><TBODY>
+<tr> <td><strong>Value</strong></td> <td><strong>Feature</strong></td> </tr>
+<tr> <td></td> 	<td><strong>packaging and build</strong></td> </tr>
+<tr> <td>5%</td> <td>untars expected contents</td> </tr>
+<tr> <td>5%</td> <td>clean build w/default action</td> </tr>
+<tr> <td>1%</td> <td>correct <tt>make check<tt></td> </tr>
+<tr> <td>1%</td> <td>correct <tt>make clean<tt></td> </tr>
+<tr> <td>1%</td> <td>correct <tt>make dist<tt></td> </tr>
+<tr> <td>2%</td> <td>reasonability of <tt>README<tt> contents</td> </tr>
+<tr> <td>5%</td> <td>reasonability of <tt>check</tt> smoke test</td> </tr>
+
+<tr> <td></td> 	<td><strong>input/output features</strong></td> </tr>
+<tr> <td>10%</td> <td>correctly copy input to output</td> </tr>
+<tr> <td>5%</td> <td>correctly implements <tt>--input</tt></td> </tr>
+<tr> <td>5%</td> <td>correctly implements <tt>--output</tt></td> </tr>
+<tr> <td>5%</td> <td>implements combined <tt>--input</tt> + <tt>--output</tt></td> </tr>
+<tr> <td>5%</td> <td>correct handling of un-openable/creatable output file</td> </tr>
+<tr> <td>5%</td> <td>correct handling of non-existant input file</td> </tr>
+<tr> <td>5%</td> <td>correct handling of invalid arguments</td> </tr>
+
+<tr> <td></td> 	<td><strong>fault handling</strong></td> </tr>
+<tr> <td>5%</td> <td>generate (and die from) SIGSEGV</td> </tr>
+<tr> <td>5%</td> <td>catch and report SIGSEGV</td> </tr>
+
+<tr> <td></td> 	<td><strong>gdb use</strong></td> </tr>
+<tr> <td>5%</td> <td>screen shot showing taking of segfault within gdb</td> </tr>
+<tr> <td>5%</td> <td>screen shot showing backtrace from segfault</td> </tr>
+<tr> <td>5%</td> <td>screen shot showing breakpoint stop before fault</td> </tr>
+<tr> <td>5%</td> <td>screen shot showing inspection of null pointer</td> </tr>
+
+<tr> <td></td> 	<td><strong>code/package review</strong></td> </tr>
+<tr> <td>2%</td> <td>correct argument processing</td> </tr>
+<tr> <td>2%</td> <td>correct file descriptor handling</td> </tr>
+<tr> <td>2%</td> <td>correct signal handling</td> </tr>
+<tr> <td>4%</td> <td>misc</td> </tr>
+</TBODY></TABLE>
+</CENTER>
+
+</BODY>
+</HTML>

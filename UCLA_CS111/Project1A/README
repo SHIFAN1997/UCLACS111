@@ -1,0 +1,23 @@
+NAME: Fan Shi
+EMAIL: fanshi2@g.ucla.edu
+ID: 805256911
+
+lab1a.c:
+	In this source file, I implement each functionality as lab instruction indicates. The program has two options. ./lab1a will execute a simple terminal I/O. 
+./lab1a --shell will pass information between two processes.
+
+Makefile:
+	This make include three options. make(default), make clean and make dist
+	make(defalut): Create an execautable lab1a with Wall and Wextra flag
+	make clean: Remove the execautable as well as the tarball
+	dist : Create a tarball for submission including lab1a.c Makefile README
+
+README : This file contains information about each files as well as reference source used.
+
+Reference:
+	For non-echo and one character mode: https://www.gnu.org/software/libc/manual/html_node/Noncanon-Example.html
+	Pipe information :   http://man7.org/linux/man-pages/man2/pipe.2.html
+	kill(3) : https://linux.die.net/man/3/kill
+	poll(2) : http://man7.org/linux/man-pages/man2/poll.2.html
+	More information about processes : http://cs241.cs.illinois.edu/wikibook/processes-part-1-introduction.html
+	fork() : http://cs241.cs.illinois.edu/wikibook/forking-part-1-introduction.html
